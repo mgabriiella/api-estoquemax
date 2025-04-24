@@ -9,14 +9,21 @@ import produtoRoutes from './routes/produtoRoutes.js';
 import vendaRoutes from './routes/vendaRoutes.js';
 import lojaRoutes from './routes/lojaRoutes.js';
 
+const app = express();
+
+// Carrega variáveis de ambiente
 dotenv.config();
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+// Configura o CORS
+const frontEndUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+app.use(cors({
+  origin: frontEndUrl,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
-// Middleware
+// Middlewares
 app.use(express.json());
-app.use(cors());
 
 // Conectando ao MongoDB
 connectDB();
@@ -31,9 +38,11 @@ app.use('/api/loja', lojaRoutes);
 // Middleware de erro global
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).json({ error: 'Algo deu errado!', details: err.message });
-});
-
-app.listen(PORT, () => {
+    res.status(500).json({ error: 'Algo deu errado!' });
+  });
+  
+  // Inicia o servidor
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
-});
+  });
