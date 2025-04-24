@@ -1,0 +1,39 @@
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import connectDB from './config/database.js';
+import clienteRoutes from './routes/clienteRoutes.js';
+import dashboardRoutes from './routes/dashboardRoutes.js';
+import produtoRoutes from './routes/produtoRoutes.js';
+import vendaRoutes from './routes/vendaRoutes.js';
+import lojaRoutes from './routes/lojaRoutes.js';
+
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware
+app.use(express.json());
+app.use(cors());
+
+// Conectando ao MongoDB
+connectDB();
+
+// Rotas
+app.use('/api/clientes', clienteRoutes);
+app.use('/api/vendas', vendaRoutes);
+app.use('/api/produtos', produtoRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/loja', lojaRoutes);
+
+// Middleware de erro global
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ error: 'Algo deu errado!', details: err.message });
+});
+
+app.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT}`);
+});
